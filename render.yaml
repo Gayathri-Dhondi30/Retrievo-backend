@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: retrievo-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: singapore
+    envVars:
+      - key: PORT
+        value: 8085
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: DB_URL
+        fromDatabase:
+          name: retrievo-postgres
+          property: connectionString
+      - key: DB_USERNAME
+        fromDatabase:
+          name: retrievo-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: retrievo-postgres
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: UPLOAD_DIR
+        value: uploads
+
+databases:
+  - name: retrievo-postgres
+    databaseName: retrievo_db
+    user: retrievo_user
+    plan: free
+    region: singapore
