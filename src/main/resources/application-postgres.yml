@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/retrievo_db}
+    url: ${DB_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/retrievo_db}}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -9,19 +9,17 @@ spring:
       minimum-idle: 2
       idle-timeout: 300000
       max-lifetime: 1200000
-      connection-timeout: 20000
+      connection-timeout: 30000
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
-        temp:
-          use_jdbc_metadata_defaults: false
 
 # Custom Retrievo Upload & AI Config
 retrievo:
