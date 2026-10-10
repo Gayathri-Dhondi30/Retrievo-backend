@@ -1,0 +1,19 @@
+# Spring Boot Maven Gitignore
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!target/classes/archetype-resources/META-INF/maven/archetype-metadata.xml
+
+# IDE Files
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+
+# OS / Temporary
+.DS_Store
+Thumbs.db
+*.log
