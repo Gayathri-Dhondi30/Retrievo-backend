@@ -75,6 +75,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:*",
+            "https://retrievo-frontend-9r6p.vercel.app",
             "https://retrievo-frontend.vercel.app",
             "https://*.vercel.app",
             "*"
