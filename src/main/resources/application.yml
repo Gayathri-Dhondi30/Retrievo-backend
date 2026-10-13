@@ -13,7 +13,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/retrievo_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:gayathri}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -22,8 +22,11 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
+
+  h2:
+    console:
+      enabled: false
 
   servlet:
     multipart:

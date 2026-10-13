@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,7 +14,7 @@ import javax.sql.DataSource;
 import java.net.URI;
 
 @Configuration
-@Profile("postgres")
+@Profile({"mysql", "postgres", "prod"})
 public class DataSourceConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceConfig.class);
@@ -32,20 +31,18 @@ public class DataSourceConfig {
     @Bean
     @Primary
     public DataSource dataSource() {
-        HikariConfig config = new HikariConfig();
-        
         String url = rawUrl;
         String username = rawUsername;
         String password = rawPassword;
 
-        // Automatically convert Render/Heroku postgres:// or postgresql:// URLs into valid JDBC format
-        if (url != null && (url.startsWith("postgres://") || url.startsWith("postgresql://"))) {
+        // Automatically convert cloud provider mysql:// URLs into valid JDBC format
+        if (url != null && (url.startsWith("mysql://") || url.startsWith("mysql2://"))) {
             try {
-                logger.info("Normalizing Render PostgreSQL URL into JDBC format...");
-                URI uri = new URI(url.replace("postgresql://", "http://").replace("postgres://", "http://"));
+                logger.info("Normalizing cloud MySQL URL into JDBC format...");
+                URI uri = new URI(url.replace("mysql2://", "http://").replace("mysql://", "http://"));
                 
                 String host = uri.getHost();
-                int port = uri.getPort() == -1 ? 5432 : uri.getPort();
+                int port = uri.getPort() == -1 ? 3306 : uri.getPort();
                 String path = uri.getPath();
                 
                 if (uri.getUserInfo() != null) {
@@ -56,27 +53,24 @@ public class DataSourceConfig {
                     }
                 }
                 
-                url = "jdbc:postgresql://" + host + ":" + port + path + "?sslmode=require";
-                logger.info("Normalized JDBC URL: {}", url);
+                url = "jdbc:mysql://" + host + ":" + port + path + "?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+                logger.info("Normalized JDBC MySQL URL: {}", url);
             } catch (Exception e) {
-                logger.warn("Failed to parse postgres URI, falling back to original URL: {}", e.getMessage());
+                logger.warn("Failed to parse MySQL URI, falling back to default URL: {}", e.getMessage());
             }
-        } else if (url != null && url.startsWith("jdbc:postgresql://") && !url.contains("sslmode=")) {
-            if (url.contains("?")) {
-                url += "&sslmode=require";
-            } else {
-                url += "?sslmode=require";
-            }
+        } else if (url == null || url.isBlank()) {
+            url = "jdbc:mysql://localhost:3306/retrievo_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
         }
 
+        String finalUsername = (username != null && !username.isBlank()) ? username : "root";
+        String finalPassword = (password != null && !password.isBlank()) ? password : "gayathri";
+
+        logger.info("Initializing MySQL DataSource connection to: {}", url);
+        HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
-        if (username != null && !username.isBlank()) {
-            config.setUsername(username);
-        }
-        if (password != null && !password.isBlank()) {
-            config.setPassword(password);
-        }
-        config.setDriverClassName("org.postgresql.Driver");
+        config.setUsername(finalUsername);
+        config.setPassword(finalPassword);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setMaximumPoolSize(10);
         config.setMinimumIdle(2);
         config.setIdleTimeout(300000);

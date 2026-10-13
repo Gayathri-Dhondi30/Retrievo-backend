@@ -42,7 +42,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             User finder = new User("Sarah Smith", "sarah@university.edu", passwordEncoder.encode("User@123"), "+1555444555", Role.USER);
             finder = userRepository.save(finder);
 
-            // Create Lost Item 1
+            // Create Lost Item 1 (MacBook Pro)
             Item lostLaptop = new Item();
             lostLaptop.setReporter(student);
             lostLaptop.setItemType(ItemType.LOST);
@@ -54,9 +54,12 @@ public class DatabaseInitializer implements CommandLineRunner {
             lostLaptop.setApproximateTime("Between 3:00 PM and 5:00 PM");
             lostLaptop.setDistinguishingFeatures("Small scratch near USB-C port, unique developer sticker.");
             lostLaptop.setStatus(ItemStatus.OPEN);
+            ItemImage img1 = new ItemImage(lostLaptop, "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80", "macbook_pro.jpg", "macbook_pro.jpg", 154200L, "image/jpeg");
+            img1.setIsPrimary(true);
+            lostLaptop.addImage(img1);
             lostLaptop = itemRepository.save(lostLaptop);
 
-            // Create Found Item 1
+            // Create Found Item 1 (Laptop in Sleeve)
             Item foundLaptop = new Item();
             foundLaptop.setReporter(finder);
             foundLaptop.setItemType(ItemType.FOUND);
@@ -68,9 +71,12 @@ public class DatabaseInitializer implements CommandLineRunner {
             foundLaptop.setApproximateTime("Around 6:15 PM");
             foundLaptop.setSafeStorageNotes("Held at Central Library Information Desk B");
             foundLaptop.setStatus(ItemStatus.OPEN);
+            ItemImage img2 = new ItemImage(foundLaptop, "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=800&q=80", "laptop_sleeve.jpg", "laptop_sleeve.jpg", 143500L, "image/jpeg");
+            img2.setIsPrimary(true);
+            foundLaptop.addImage(img2);
             foundLaptop = itemRepository.save(foundLaptop);
 
-            // Create Lost Item 2
+            // Create Lost Item 2 (Leather Wallet)
             Item lostWallet = new Item();
             lostWallet.setReporter(student);
             lostWallet.setItemType(ItemType.LOST);
@@ -80,7 +86,10 @@ public class DatabaseInitializer implements CommandLineRunner {
             lostWallet.setLocation("Campus Cafeteria Main Hall");
             lostWallet.setDateLostOrFound(LocalDate.now().minusDays(3));
             lostWallet.setStatus(ItemStatus.OPEN);
-            itemRepository.save(lostWallet);
+            ItemImage img3 = new ItemImage(lostWallet, "https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=800&q=80", "leather_wallet.jpg", "leather_wallet.jpg", 98700L, "image/jpeg");
+            img3.setIsPrimary(true);
+            lostWallet.addImage(img3);
+            lostWallet = itemRepository.save(lostWallet);
 
             // Create Match Record
             ItemMatch match = new ItemMatch(lostLaptop, foundLaptop, 0.88, 0.82, 0.92, "WEIGHTED_FEATURE_FALLBACK");
